@@ -1,0 +1,25 @@
+# Игнорируем папки сборки
+_build/
+build/
+cmake-build-*/
+
+# Взято из https://github.com/github/gitignore/blob/main/C%2B%2B.gitignore
+*.d
+*.slo
+*.lo
+*.o
+*.obj
+*.gch
+*.pch
+*.so
+*.dylib
+*.dll
+*.mod
+*.smod
+*.lai
+*.la
+*.a
+*.lib
+*.exe
+*.out
+*.app
