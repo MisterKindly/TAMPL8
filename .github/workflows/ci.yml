@@ -1,2 +1,28 @@
+name: CI
 
+on:
+  [push, pull_request]
 
+jobs:
+  build_on_linux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - compiler_set: g++
+          - compiler_set: clang++
+
+    steps:
+      - name: checking out repository
+        uses: actions/checkout@v4
+
+      - name: preparing build
+        run:  cmake -H. -B_build -D CMAKE_CXX_COMPILER=${{matrix.compiler_set}} 
+      - name: building
+        run:  cmake --build _build
+      - name: checking programs output
+        run:  |
+          echo "8 10 2" | _build/solver_application/solver_app
+          _build/hello_world_application/hello
+      - name: status info
+        run: echo ${{ job.status }} is status of job
