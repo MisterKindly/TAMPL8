@@ -10,22 +10,46 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - cpp_compiler: g++
-            c_compiler: gcc
-          - cpp_compiler: clang++
-            c_compiler: clang
+          - c_compiler: gcc
+          - c_compiler: clang
 
     steps:
       - name: checking out repository
         uses: actions/checkout@v4
 
       - name: preparing build
-        run:  cmake -H. -B_build -D CMAKE_CXX_COMPILER=${{matrix.cpp_compiler}} -D CMAKE_C_COMPILLER=${{matrix.c_compiler}}
+        run:  cmake -H. -B_build -D CMAKE_C_COMPILLER=${{matrix.c_compiler}}
       - name: building
         run:  cmake --build _build
       - name: checking programs output
         run:  |
           echo "8 10 2" | _build/solver_application/solver_app
           _build/hello_world_application/hello
+      - name: status info
+        run: echo ${{ job.status }} is status of job
+  build_on_windows:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - build_type: Debug
+          - build_type: Release
+
+    steps:
+      - name: checking out repository
+        uses: actions/checkout@v4
+
+      - name: preparing build
+        run:  cmake -S . -B _build
+      
+      - name: building
+        run:  cmake --build _build --config ${{matrix.build_type}}
+      
+      - name: checking programs output
+        run:  |
+          echo "8 10 2" | _build\solver_application\${{matrix.build_type}}\solver_app.exe
+          _build\hello_world_application\${{matrix.build_type}}\hello.exe
+      
       - name: status info
         run: echo ${{ job.status }} is status of job
