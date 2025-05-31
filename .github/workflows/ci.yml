@@ -7,6 +7,7 @@ jobs:
   build_on_linux:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         include:
           - cpp_compiler: g++
