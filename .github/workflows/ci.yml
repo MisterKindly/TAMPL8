@@ -47,7 +47,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-artifact@v4
         with:
-          name: linux-packages
+          name: linux-packages-${{matrix.c_compiler}}  # Исправлено
           path: _build_package/*.deb
           retention-days: 5
 
