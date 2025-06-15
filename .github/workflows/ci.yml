@@ -28,8 +28,8 @@ jobs:
         
       - name: Run tests
         run: |
-          echo "8 10 2" | _build/solver_application/solver_app
-          _build/hello_world_application/hello
+          echo "8 10 2" | _build/bin/solver_app
+          _build/bin/hello
           
       - name: Package preparation (DEB/RPM)
         if: ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags/') }}
@@ -71,8 +71,8 @@ jobs:
       
       - name: Run tests
         run: |
-          Write-Output "8 10 2" | _build\solver_application\${{matrix.build_type}}\solver_app.exe
-          _build\hello_world_application\${{matrix.build_type}}\hello.exe
+          Write-Output "8 10 2" | _build\bin\${{matrix.build_type}}\solver_app.exe
+          _build\bin\${{matrix.build_type}}\hello.exe
       
       - name: Package preparation (MSI)
         if: ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags/') }}

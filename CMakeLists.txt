@@ -19,10 +19,13 @@ set(SOLVER_VERSION_TWEAK 0)
 
 project(Solver VERSION ${SOLVER_VERSION})
 
-add_subdirectory(solver_application)
-add_subdirectory(hello_world_application)
+set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
+
 add_subdirectory(formatter_lib)
 add_subdirectory(formatter_ex_lib)
 add_subdirectory(solver_lib)
+add_subdirectory(solver_application)
+add_subdirectory(hello_world_application)
 
 include(CPackConfig.cmake)
