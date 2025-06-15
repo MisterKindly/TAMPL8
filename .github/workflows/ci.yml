@@ -47,7 +47,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-artifact@v4
         with:
-          name: linux-packages
+          name: linux-packages-${{matrix.c_compiler}}  # Уникальное имя для каждого компилятора
           path: _build_package/*.deb
           retention-days: 5
 
@@ -67,18 +67,23 @@ jobs:
       - name: Create RTF license for WiX
         shell: powershell
         run: |
+          # Создаем минимальный RTF файл
           $rtfHeader = "{\rtf1\ansi\deff0{\fonttbl{\f0\fnil\fcharset0 Arial;}}\viewkind4\uc1\pard\f0\fs20"
           $rtfFooter = "}"
           
+          # Получаем содержимое лицензии
           $licenseContent = Get-Content -Path LICENSE -Raw
           
+          # Экранируем специальные символы
           $licenseContent = $licenseContent -replace '\\', '\\'
           $licenseContent = $licenseContent -replace '{', '\{'
           $licenseContent = $licenseContent -replace '}', '\}'
           $licenseContent = $licenseContent -replace "`n", "\line "
           
+          # Собираем полное содержимое
           $rtfContent = $rtfHeader + " " + $licenseContent + " " + $rtfFooter
           
+          # Сохраняем файл
           Set-Content -Path LICENSE.rtf -Value $rtfContent -Encoding UTF8
       
       - name: Prepare build
@@ -105,7 +110,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-artifact@v4
         with:
-          name: windows-package
+          name: windows-package-${{matrix.build_type}}  # Уникальное имя для каждой конфигурации
           path: _build_package/*.msi
           retention-days: 5
 
@@ -152,6 +157,8 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
+          pattern: '*'
+          merge-multiple: true
           
       - name: Generate ChangeLog
         run: |
