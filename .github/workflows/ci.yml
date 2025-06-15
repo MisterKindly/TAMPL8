@@ -44,7 +44,7 @@ jobs:
         
       - name: Upload Linux packages
         if: ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags/') }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: linux-packages
           path: _build_package/*.deb
@@ -71,7 +71,7 @@ jobs:
       
       - name: Run tests
         run: |
-          echo "8 10 2" | _build\solver_application\${{matrix.build_type}}\solver_app.exe
+          Write-Output "8 10 2" | _build\solver_application\${{matrix.build_type}}\solver_app.exe
           _build\hello_world_application\${{matrix.build_type}}\hello.exe
       
       - name: Package preparation (MSI)
@@ -85,7 +85,7 @@ jobs:
         
       - name: Upload Windows package
         if: ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags/') }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: windows-package
           path: _build_package/*.msi
@@ -112,7 +112,7 @@ jobs:
         run: cmake --build _build_package --target package
         
       - name: Upload macOS package
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: macos-package
           path: _build_package/*.dmg
@@ -126,7 +126,7 @@ jobs:
     
     steps:
       - name: Download all artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: artifacts
           
