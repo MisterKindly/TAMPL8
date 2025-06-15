@@ -9,3 +9,7 @@ if (NOT TARGET formatter_ex)
 endif()
 
 target_link_libraries(hello formatter_ex)
+
+install(TARGETS hello 
+        RUNTIME DESTINATION bin
+        BUNDLE DESTINATION bin)

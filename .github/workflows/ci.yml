@@ -1,7 +1,10 @@
 name: CI
 
 on:
-  [push, pull_request]
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
 
 jobs:
   build_on_linux:
@@ -14,19 +17,39 @@ jobs:
           - c_compiler: clang
 
     steps:
-      - name: checking out repository
+      - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: preparing build
-        run:  cmake -H. -B_build -D CMAKE_C_COMPILLER=${{matrix.c_compiler}}
-      - name: building
-        run:  cmake --build _build
-      - name: checking programs output
-        run:  |
+        
+      - name: Prepare build
+        run: cmake -H. -B_build -DCMAKE_C_COMPILER=${{matrix.c_compiler}}
+        
+      - name: Build project
+        run: cmake --build _build
+        
+      - name: Run tests
+        run: |
           echo "8 10 2" | _build/solver_application/solver_app
           _build/hello_world_application/hello
-      - name: status info
-        run: echo ${{ job.status }} is status of job
+          
+      - name: Package preparation (DEB/RPM)
+        if: ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags/') }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rpm
+          cmake -H. -B_build_package -DCPACK_GENERATOR="DEB;RPM"
+          
+      - name: Create Linux packages
+        if: ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags/') }}
+        run: cmake --build _build_package --target package
+        
+      - name: Upload Linux packages
+        if: ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags/') }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-packages
+          path: _build_package/*.deb
+          retention-days: 5
+
   build_on_windows:
     runs-on: windows-latest
     strategy:
@@ -37,19 +60,95 @@ jobs:
           - build_type: Release
 
     steps:
-      - name: checking out repository
+      - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: preparing build
-        run:  cmake -S . -B _build
+        
+      - name: Prepare build
+        run: cmake -S . -B _build
       
-      - name: building
-        run:  cmake --build _build --config ${{matrix.build_type}}
+      - name: Build project
+        run: cmake --build _build --config ${{matrix.build_type}}
       
-      - name: checking programs output
-        run:  |
+      - name: Run tests
+        run: |
           echo "8 10 2" | _build\solver_application\${{matrix.build_type}}\solver_app.exe
           _build\hello_world_application\${{matrix.build_type}}\hello.exe
       
-      - name: status info
-        run: echo ${{ job.status }} is status of job
+      - name: Package preparation (MSI)
+        if: ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags/') }}
+        run: |
+          cmake -S . -B _build_package -DCPACK_GENERATOR="WIX"
+          
+      - name: Create Windows package
+        if: ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags/') }}
+        run: cmake --build _build_package --config Release --target package
+        
+      - name: Upload Windows package
+        if: ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags/') }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-package
+          path: _build_package/*.msi
+          retention-days: 5
+
+  build_on_macos:
+    runs-on: macos-latest
+    if: ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags/') }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Prepare build
+        run: cmake -H. -B_build
+        
+      - name: Build project
+        run: cmake --build _build
+        
+      - name: Package preparation (DMG)
+        run: cmake -H. -B_build_package -DCPACK_GENERATOR="DragNDrop"
+        
+      - name: Create macOS package
+        run: cmake --build _build_package --target package
+        
+      - name: Upload macOS package
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos-package
+          path: _build_package/*.dmg
+          retention-days: 5
+
+  create_release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: [build_on_linux, build_on_windows, build_on_macos]
+    if: ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags/') }}
+    
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: artifacts
+          
+      - name: Generate ChangeLog
+        run: |
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          DATE=$(date -u +'%a %b %d %Y')
+          echo "* $DATE $GITHUB_ACTOR <$GITHUB_ACTOR@users.noreply.github.com> $TAG_NAME" > CHANGELOG.md
+          echo "- Automated release" >> CHANGELOG.md
+          
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          name: Release ${{ github.ref }}
+          body: |
+            Automated package release
+            - Linux: .deb packages
+            - Windows: .msi installer
+            - macOS: .dmg package
+          files: |
+            artifacts/**/*
+            CHANGELOG.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

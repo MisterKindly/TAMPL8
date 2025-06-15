@@ -15,3 +15,7 @@ endif()
 
 
 target_link_libraries(solver_app formatter_ex solver)
+
+install(TARGETS solver_app 
+        RUNTIME DESTINATION bin
+        BUNDLE DESTINATION bin)
