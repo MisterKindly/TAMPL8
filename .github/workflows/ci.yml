@@ -178,3 +178,34 @@ jobs:
             CHANGELOG.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+docker_logs:
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Build Docker image
+      run: docker build -t hello-app .
+      
+    - name: Run container and capture logs
+      run: |
+        mkdir docker_logs
+        docker run --rm \
+          -v "$(pwd)/docker_logs:/logs" \
+          -e LOG_PATH=/logs/app.log \
+          hello-app > docker_logs/console.log 2>&1 || true
+        
+        echo "Docker logs:"
+        cat docker_logs/app.log
+        echo "Console output:"
+        cat docker_logs/console.log
+        
+    - name: Upload logs as artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: docker-logs
+        path: |
+          docker_logs/app.log
+          docker_logs/console.log
+        retention-days: 7
