@@ -196,8 +196,7 @@ jobs:
             app > docker_logs/console.log 2>&1 || true
             
 
-          echo "App logs"
-          cat logs/log.txt
+           
           echo "Console output:"
           cat docker_logs/console.log
         
