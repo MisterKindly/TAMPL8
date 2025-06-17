@@ -188,7 +188,8 @@ jobs:
       - name: Build Docker image
         run: docker build -t hello-app .
       - name: Check
-        run: cd \ ls -a 
+        run: cd \
+        tree 
          
 
       - name: Run container and capture logs
