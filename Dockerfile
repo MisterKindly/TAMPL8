@@ -15,4 +15,4 @@ ENV LOG_PATH /logs/output.log
 VOLUME /logs
 
 WORKDIR _install/bin
-ENTRYPOINT ["./hello"]
+ENTRYPOINT ["/app/_build/bin/hello"]
