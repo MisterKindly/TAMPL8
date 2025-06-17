@@ -197,9 +197,9 @@ jobs:
             
 
           echo "Docker logs:"
-          cat docker_logs/app.log
-          echo "Console output:"
           cat docker_logs/output.log
+          echo "Console output:"
+          cat docker_logs/console.log
         
       - name: Upload logs as artifacts
         uses: actions/upload-artifact@v4
