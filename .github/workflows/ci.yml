@@ -197,7 +197,7 @@ jobs:
             
 
           echo "App logs"
-          cat docker_logs/docker_logs/log.txt
+          cat docker_logs/log.txt
           echo "Console output:"
           cat docker_logs/console.log
         
