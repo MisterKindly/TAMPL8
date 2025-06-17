@@ -10,7 +10,7 @@ RUN cmake -H. -B_build -DCMAKE_BUILD_TYPE=Release
 RUN cmake --build _build
 
 ENV INPUT_DATA ""
-ENX LOG_PATH /logs/output.log
+ENV LOG_PATH /logs/output.log
 
 VOLUME /logs
 
