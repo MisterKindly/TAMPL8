@@ -193,13 +193,13 @@ jobs:
           mkdir docker_logs
           docker run --rm \
             -v "$(pwd)/docker_logs:/logs" \
-            hello-app
+            app > docker_logs/console.log 2>&1
             
 
-          echo "Docker logs:"
-          cat logs/output.log
+          echo "App logs"
+          cat docker_logs/output.log
           echo "Console output:"
-          cat logs/console.log
+          cat docker_logs/console.log
         
       - name: Upload logs as artifacts
         uses: actions/upload-artifact@v4
