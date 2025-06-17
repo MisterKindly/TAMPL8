@@ -186,9 +186,10 @@ jobs:
         uses: actions/checkout@v4
       
       - name: Build Docker image
-        run: docker build -t hello-app .\
-          cd\
-          ls -a
+        run: docker build -t hello-app .
+      - name: Check
+        run: cd \ ls -a 
+         
 
       - name: Run container and capture logs
         run: |
