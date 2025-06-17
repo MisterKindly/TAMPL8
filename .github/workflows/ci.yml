@@ -186,15 +186,17 @@ jobs:
         uses: actions/checkout@v4
       
       - name: Build Docker image
-        run: docker build -t hello-app .
-      
+        run: docker build -t hello-app .\
+          cd\
+          ls -a
+
       - name: Run container and capture logs
         run: |
           mkdir docker_logs
           docker run --rm \
             -v "$(pwd)/docker_logs:/logs" \
-            hello-app\
-            ls -a
+            hello-app
+            
 
           echo "Docker logs:"
           cat docker_logs/app.log
