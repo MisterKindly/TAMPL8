@@ -1,7 +1,7 @@
 FROM ubuntu:18.04
 
 RUN apt update
-RUN apt install -yy gcc g++ cmake
+RUN apt install -yy  gcc g++ cmake
 
 COPY . app/
 WORKDIR app
@@ -9,10 +9,9 @@ WORKDIR app
 RUN cmake -H. -B_build -DCMAKE_BUILD_TYPE=Release
 RUN cmake --build _build
 
-ENV INPUT_DATA ""
-ENV LOG_PATH /logs/output.log
 
-VOLUME /logs
+ENV LOG_PATH=/home/logs/log.txt
+VOLUME /home/logs
 
-WORKDIR _install/bin
-ENTRYPOINT ["/app/_build/bin/hello"]
+WORKDIR _build/hello_world_application
+ENTRYPOINT ./hello
