@@ -190,14 +190,14 @@ jobs:
 
       - name: Run container and capture logs
         run: |
-          mkdir docker_logs
+          mkdir -p docker_logs
           docker run --rm \
             -v "$(pwd)/docker_logs:/logs" \
-            app > docker_logs/console.log 2>&1
+            app > docker_logs/console.log 2>&1 || true
             
 
           echo "App logs"
-          cat docker_logs/output.log
+          cat docker_logs/docker_logs/log.txt
           echo "Console output:"
           cat docker_logs/console.log
         
@@ -206,6 +206,6 @@ jobs:
         with:
           name: docker-logs
           path: |
-            docker_logs/app.log
+            docker_logs/log.txt
             docker_logs/console.log
           retention-days: 7
