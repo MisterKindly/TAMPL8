@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+gitFROM ubuntu:18.04
 
 RUN apt update
 RUN apt install -yy  gcc g++ cmake
@@ -13,5 +13,5 @@ RUN cmake --build _build
 ENV LOG_PATH=/logs/log.txt
 VOLUME /logs
 
-WORKDIR /app/_build/hello_world_application
-ENTRYPOINT ["./hello"]
+WORKDIR _install/bin
+ENTRYPOINT ["/app/_build/bin/hello"]
