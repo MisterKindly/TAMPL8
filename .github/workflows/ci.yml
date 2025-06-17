@@ -193,8 +193,7 @@ jobs:
           mkdir docker_logs
           docker run --rm \
             -v "$(pwd)/docker_logs:/logs" \
-            -e LOG_PATH=/logs/app.log \
-            hello-app > docker_logs/console.log 2>&1 || true
+            hello-app
         
           echo "Docker logs:"
           cat docker_logs/app.log
