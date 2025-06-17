@@ -193,8 +193,9 @@ jobs:
           mkdir docker_logs
           docker run --rm \
             -v "$(pwd)/docker_logs:/logs" \
-            hello-app
-        
+            hello-app\
+            ls -a
+
           echo "Docker logs:"
           cat docker_logs/app.log
           echo "Console output:"
